@@ -1,0 +1,13 @@
+ID: travel_iata_pro_ext
+_schema-version: '3.1'
+extends: travel_iata
+version: 1.0.0
+description: "IAG7 Travel Invoice Ext"
+parameters:
+  enable-parallel-deployments: true
+modules:
+  - name: travel-iata
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud_pro
+    parameters:
+      host: travel-iata

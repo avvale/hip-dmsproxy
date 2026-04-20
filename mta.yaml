@@ -1,0 +1,45 @@
+_schema-version: 3.3.0
+ID: dmsproxy
+version: 1.0.0-SNAPSHOT
+description: "DSM proxy project"
+parameters:
+  enable-parallel-deployments: true
+modules:
+  # -------- BACKEND --------------------
+  - name: dmsproxy
+    type: java
+    path: .
+    parameters:
+      buildpack: sap_java_buildpack_jakarta
+      disk-quota: 512M
+      memory: 512M
+    properties:
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
+      JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 17.+ }'
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package
+      build-result: target/*.jar
+    requires:
+      - name: dmsproxy-auth
+      - name: dmsproxy-destination
+
+resources:
+  # -------- XSUAA -------------------------------------
+  - name: dmsproxy-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: dmsproxy
+        tenant-mode: dedicated
+
+  # -------- DESTINATION -----------------------------
+  - name: dmsproxy-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: lite
+      service: destination

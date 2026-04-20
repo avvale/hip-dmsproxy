@@ -1,0 +1,13 @@
+ID: dmsproxy_dev_ext
+_schema-version: '3.1'
+extends: dmsproxy
+version: 1.0.0
+description: "DMS Proxy ext."
+parameters:
+  enable-parallel-deployments: true
+modules:
+  - name: dmsproxy
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud_dev
+    parameters:
+      host: dmsproxy-dev
