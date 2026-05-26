@@ -57,10 +57,10 @@ jobs:
           cf install-plugin -f multiapps
 
       # 8. Login y Despliegue en BTP
-      - name: Deploy to BTP (QAS)
+      - name: Deploy to BTP (DEV)
         env:
           CF_USER: ${{ secrets.CF_USER }}
           CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
         run: |        
           cf login -a https://api.cf.eu10-004.hana.ondemand.com -u "$CF_USER" -p "$CF_PASSWORD" -o "org-work-zone-hi-partnerts-dev" -s "Avvale-Dev"
-          npm run deploy:qas
+          npm run deploy:dev
