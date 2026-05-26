@@ -31,23 +31,6 @@ public class DMSProxyRestController {
     public void download(@PathVariable(value = "objectId", required = true) String objectId, Locale locale,
                          HttpServletResponse response, HttpServletRequest request)
             throws Exception {
-        String serverName = request.getServerName();
-        String fullUrl = request.getRequestURL().toString();
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-        String remoteAddr = request.getRemoteAddr();
-        log.info("URL de llamada: " + fullUrl);
-        log.info("Origin: " + origin);
-        log.info("Referer: " + referer);
-        log.info("RemoteAddr: " + remoteAddr);
-        String sapUrl = "https://my430894.s4hana.cloud.sap/";
-
-        // Si entran por navegador directo o desde otro sitio, referer será nulo o distinto
-        if (referer == null || !referer.startsWith(sapUrl)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
         OutputStream out = response.getOutputStream();
         try {
             Map<String,Object> map = dmsProxyFacade.downloadPdf(objectId);

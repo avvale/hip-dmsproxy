@@ -33,3 +33,4 @@ build/
 .vscode/
 /.mvn/
 /node_modules/
+/mta_archives/

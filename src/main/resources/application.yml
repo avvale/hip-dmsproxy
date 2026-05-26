@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: local
+  sql.init.platform: h2
+
+
+---
+server:
+  port: 8080
+spring:
+  config.activate.on-profile: local
+
+destination:
+  dms:
+    name: Dms_PRO
+---
+spring:
+  config.activate.on-profile: cloud_dev
+destination:
+  dms:
+    name: Dms_PRO
+
+---
+spring:
+  config.activate.on-profile: cloud_qas
+destination:
+  dms:
+    name: Dms_PRO
+---
+spring:
+  config.activate.on-profile: cloud_pro
+destination:
+  dms:
+    name: Dms_PRO

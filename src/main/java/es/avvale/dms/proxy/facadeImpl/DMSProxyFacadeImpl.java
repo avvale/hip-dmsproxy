@@ -17,14 +17,18 @@ public class DMSProxyFacadeImpl implements DMSProxyFacade {
     @Autowired
     private DMSConnection dmsConnection;
 
+    @Autowired
+    private Environment environment;
+
     @Override
-    public Map<String,Object> downloadPdf(String objectId) throws Exception {
-        HttpDestinationDTO httpDestination = dmsConnection.getDestinationFromBTP("DMS_DESTINATION");
+    public Map<String, Object> downloadPdf(String objectId) throws Exception {
+        HttpDestinationDTO httpDestination = dmsConnection.
+                getDestinationFromBTP(environment.getProperty("destination.dms.name"));
         String token = dmsConnection.getToken(httpDestination.getTokenServiceURL(),
                 httpDestination.getClientId(), httpDestination.getClientSecret());
         String host = httpDestination.getUrl();
         String repositoryId = httpDestination.getRepositoryId();
         String url = host + repositoryId + "/root?cmisaction=download&objectId=" + objectId;
-        return dmsConnection.connectTOAPISAPCloudDMS(url, token, HttpMethod.GET,false);
+        return dmsConnection.connectTOAPISAPCloudDMS(url, token, HttpMethod.GET, false);
     }
 }

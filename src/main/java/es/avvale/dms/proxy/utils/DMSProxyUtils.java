@@ -1,6 +1,9 @@
 package es.avvale.dms.proxy.utils;
 
+import es.avvale.dms.proxy.constants.DMSProxyConstants;
 import lombok.extern.log4j.Log4j2;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -45,4 +48,21 @@ public class DMSProxyUtils {
         }
         return literalStr;
     }
+
+    public String getJwkSetUri() {
+        String env =  System.getenv(DMSProxyConstants.VCAP_SERVICES);
+
+        try {
+            JSONObject jsonObj = new JSONObject(env);
+            JSONArray jsonArr = jsonObj.getJSONArray(DMSProxyConstants.instance_xsuaa);
+            JSONObject credentials = jsonArr.getJSONObject(0).getJSONObject(DMSProxyConstants.credentials);
+            String url = credentials.getString(DMSProxyConstants.url) + "/" + DMSProxyConstants.token_keys;
+            log.info("URL: {}", url);
+            return url;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
 }

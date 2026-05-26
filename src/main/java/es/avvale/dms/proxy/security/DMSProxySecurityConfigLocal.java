@@ -1,30 +1,22 @@
 package es.avvale.dms.proxy.security;
 
-
-import es.avvale.dms.proxy.utils.DMSProxyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
-@Profile({"cloud_dev", "cloud_qas", "cloud_pro"})
-public class DMSProxySecurity {
-
-    @Autowired
-    private DMSProxyUtils utils;
+@Profile({"local"})
+public class DMSProxySecurityConfigLocal {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request ->
                         new CorsConfiguration().applyPermitDefaultValues()))
@@ -32,12 +24,6 @@ public class DMSProxySecurity {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll());
         return http.build();
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        String url = utils.getJwkSetUri();
-        return NimbusJwtDecoder.withJwkSetUri(url).build();
     }
 
 }
