@@ -28,7 +28,7 @@ public class DMSProxyFacadeImpl implements DMSProxyFacade {
                 httpDestination.getClientId(), httpDestination.getClientSecret());
         String host = httpDestination.getUrl();
         String repositoryId = httpDestination.getRepositoryId();
-        String url = host + repositoryId + "/root?cmisaction=download&objectId=" + objectId;
+        String url = host + "/browser/" +repositoryId + "/root?cmisaction=download&objectId=" + objectId;
         return dmsConnection.connectTOAPISAPCloudDMS(url, token, HttpMethod.GET, false);
     }
 }
