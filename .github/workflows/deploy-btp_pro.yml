@@ -1,0 +1,66 @@
+name: Deploy Hip DMS to PRO
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: #
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descargar el código del repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configurar Java (Necesario para el mvn clean package)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Cambia a 11 o 21 si es necesario
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 3. Configurar Node.js (Necesario para @sap/cds-dk)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 4. Instalar herramientas de SAP
+      - name: Install SAP CAP CLI and MBT
+        run: |
+          npm install -g @sap/cds-dk
+          # Instalamos MBT (MTA Build Tool)
+          npm install -g mbt
+
+      # 5. Build de Maven (mvn clean package)
+      - name: Maven Build
+        run: mvn clean package
+
+      # 6. Build del proyecto (cds build + mbt build)
+      - name: CDS and MTA Build
+        run: npm run build
+
+      # 7. Instalar Cloud Foundry CLI y Plugins de Deploy (Método Oficial)
+      - name: Install CF CLI
+        run: |
+          
+          wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+          echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+        
+          sudo apt-get update
+          sudo apt-get install cf8-cli
+          
+          cf install-plugin -f multiapps
+
+      # 8. Login y Despliegue en BTP
+      - name: Deploy to BTP PRO
+        env:
+          CF_USER: ${{ secrets.CF_USER }}
+          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+        run: |        
+          cf login -a https://api.cf.eu10-004.hana.ondemand.com -u "$CF_USER" -p "$CF_PASSWORD" -o "org-work-zone-hi-partnerts-pro" -s "avvale"
+          npm run deploy:pro
